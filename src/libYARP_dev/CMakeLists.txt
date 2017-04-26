@@ -66,6 +66,7 @@ set(YARP_dev_HDRS include/yarp/dev/all.h
                   include/yarp/dev/IPositionControl.h
                   include/yarp/dev/IPositionDirect.h
                   include/yarp/dev/IPositionDirectImpl.h
+                  include/yarp/dev/ISafeControl.h
                   include/yarp/dev/IPWMControl.h
                   include/yarp/dev/IRangefinder2D.h
                   include/yarp/dev/IRemoteVariables.h
