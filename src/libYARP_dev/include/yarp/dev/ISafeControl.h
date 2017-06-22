@@ -28,14 +28,18 @@ public:
      * @param p joint configuration
      * @return true/false.
      */
-    virtual bool checkPosition(double *p) = 0;
+    virtual bool checkPosition(int part, double *p) = 0;
+    virtual bool checkPosition(int part, double p, int j) = 0;
 
     /**
      * Check velocity at present configuration
      * @param v joint velocity
      * @return true/false.
      */
-    virtual bool checkVelocity(double *v) = 0;
+    virtual bool checkVelocity(int part, double *v) = 0;
+    virtual bool checkVelocity(int part, double v, int j) = 0;
+
+    virtual int bind(std::string part) = 0;
 };
 
     }

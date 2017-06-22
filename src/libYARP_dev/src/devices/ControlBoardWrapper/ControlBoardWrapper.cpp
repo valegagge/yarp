@@ -771,6 +771,19 @@ bool ControlBoardWrapper::attachAll(const PolyDriverList &polylist)
             continue;
         }
 
+        if (tmpKey == "SafeMotionControl")
+        {
+            polylist[p]->poly->view(isafectrl);
+
+            printf("\nisafectrl->bind(%s)\n\n", partName.c_str());
+
+            partNum = isafectrl->bind(partName);
+
+            printf("\nisafectrl->bind(%s) = %d\n\n", partName.c_str(), partNum);
+
+            continue;
+        }
+
         // find appropriate entry in list of subdevices and attach
         unsigned int k=0;
         for(k=0; k<device.subdevices.size(); k++)

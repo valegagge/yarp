@@ -21,6 +21,8 @@
 #include <yarp/os/Stamp.h>
 #include <yarp/os/Vocab.h>
 
+#include <yarp/dev/ISafeControl.h>
+
 #include <yarp/dev/ControlBoardInterfaces.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/ControlBoardInterfacesImpl.h>
@@ -316,7 +318,10 @@ private:
     yarp::os::Semaphore                             rpcDataMutex;                   // mutex to avoid concurrency between more clients using rppc port
     yarp::dev::impl::MultiJointData                 rpcData;                        // Structure used to re-arrange data from "multiple_joints" calls.
 
+    yarp::dev::ISafeControl *isafectrl;
+
     std::string         partName;               // to open ports and print more detailed debug messages
+    int                 partNum;
 
     int               controlledJoints;
     int               base;         // to be removed
