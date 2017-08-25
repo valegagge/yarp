@@ -321,7 +321,7 @@ private:
     yarp::dev::ISafeControl *isafectrl;
 
     std::string         partName;               // to open ports and print more detailed debug messages
-    int                 partNum;
+    int                 partID;
 
     int               controlledJoints;
     int               base;         // to be removed

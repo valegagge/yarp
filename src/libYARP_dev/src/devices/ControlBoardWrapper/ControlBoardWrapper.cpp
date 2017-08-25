@@ -771,15 +771,13 @@ bool ControlBoardWrapper::attachAll(const PolyDriverList &polylist)
             continue;
         }
 
-        if (tmpKey == "SafeMotionControl")
+        if (tmpKey == "SelfCollisionCheck")
         {
             polylist[p]->poly->view(isafectrl);
 
-            printf("\nisafectrl->bind(%s)\n\n", partName.c_str());
+            partID = isafectrl->bind(partName);
 
-            partNum = isafectrl->bind(partName);
-
-            printf("\nisafectrl->bind(%s) = %d\n\n", partName.c_str(), partNum);
+            printf("\nisafectrl->bind(%s) = %d\n\n", partName.c_str(), partID);
 
             continue;
         }
@@ -1393,6 +1391,17 @@ bool ControlBoardWrapper::positionMove(const double *refs)
     bool ret = true;
     int j_wrap = 0;         // index of the wrapper joint
 
+    double safe_refs[32];
+
+    bool safe = true;
+
+    for (int j = 0; j < controlledJoints; ++j) safe_refs[j] = refs[j];
+
+    if (isafectrl)
+    {
+        safe = isafectrl->checkPosition(partID, safe_refs);
+    }
+
     int nDev = device.subdevices.size();
     for(int subDev_idx=0; subDev_idx < nDev; subDev_idx++)
     {
@@ -1415,7 +1424,7 @@ bool ControlBoardWrapper::positionMove(const double *refs)
                 joints[j_dev] = p->base + j_dev;  // for all joints is equivalent to add offset term
             }
 
-            ret = ret && p->pos2->positionMove(wrapped_joints, joints, &refs[j_wrap]);
+            ret = ret && p->pos2->positionMove(wrapped_joints, joints, &safe_refs[j_wrap]);
             j_wrap+=wrapped_joints;
         }
         else   // Classic Position Control
@@ -1426,7 +1435,7 @@ bool ControlBoardWrapper::positionMove(const double *refs)
                 for(int j_dev = 0; j_dev < wrapped_joints; j_dev++, j_wrap++)
                 {
                     int off=device.lut[j_wrap].offset;
-                    ret=ret && p->pos->positionMove(p->base+off, refs[j_wrap]);
+                    ret=ret && p->pos->positionMove(p->base+off, safe_refs[j_wrap]);
                 }
             }
             else

@@ -29,7 +29,7 @@ public:
      * @return true/false.
      */
     virtual bool checkPosition(int part, double *p) = 0;
-    virtual bool checkPosition(int part, double p, int j) = 0;
+    virtual bool checkPosition(int part, int njoints, int *joints, double *p) = 0;
 
     /**
      * Check velocity at present configuration
@@ -37,7 +37,7 @@ public:
      * @return true/false.
      */
     virtual bool checkVelocity(int part, double *v) = 0;
-    virtual bool checkVelocity(int part, double v, int j) = 0;
+    virtual bool checkVelocity(int part, int njoints, int *joints, double *v) = 0;
 
     virtual int bind(std::string part) = 0;
 };
