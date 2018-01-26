@@ -606,7 +606,7 @@ bool ControlBoardWrapper::openDeferredAttach(Property& prop)
 
         if (isafectrl)
         {
-            isafectrl->map(k, wBase, wTop, base, top);
+            isafectrl->map(partID, wBase, wTop, base, top);
         }
     }
 
@@ -767,9 +767,10 @@ bool ControlBoardWrapper::attachAll(const PolyDriverList &polylist)
     {
         // look if we have to attach to a calibrator
         std::string tmpKey=polylist[p]->key.c_str();
+
         if(tmpKey == "Calibrator" || tmpKey == "calibrator")
         {
-            // Set the IRemoteCalibrator interface, the wrapper must point to the calibrato rdevice
+            // Set the IRemoteCalibrator interface, the wrapper must point to the calibrator device
             yarp::dev::IRemoteCalibrator *calibrator;
             polylist[p]->poly->view(calibrator);
 
@@ -781,9 +782,9 @@ bool ControlBoardWrapper::attachAll(const PolyDriverList &polylist)
         {
             polylist[p]->poly->view(isafectrl);
 
-            partID = isafectrl->bind(partName);
+            partID = isafectrl->bind(/*partName*/);
 
-            printf("\nisafectrl->bind(%s) = %d\n\n", partName.c_str(), partID);
+            yDebug("\nisafectrl->bind(%s) = %d\n\n", partName.c_str(), partID);
 
             continue;
         }

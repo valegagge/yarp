@@ -1857,18 +1857,20 @@ bool FakeMotionControl::velocityMoveRaw(const double *sp)
 bool FakeMotionControl::setCalibrationParametersRaw(int j, const CalibrationParameters& params)
 {
     yTrace() << "setCalibrationParametersRaw for joint" << j;
+    setControlModeRaw(j, VOCAB_CM_POSITION);
     return true;
 }
 
 bool FakeMotionControl::calibrate2Raw(int j, unsigned int type, double p1, double p2, double p3)
 {
     yTrace() << "calibrate2Raw for joint" << j;
+    setControlModeRaw(j, VOCAB_CM_POSITION);
     return true;
 }
 
 bool FakeMotionControl::doneRaw(int axis)
 {
-    bool result = false;
+    bool result = true;
 
     return result;
 }
@@ -2610,7 +2612,10 @@ bool FakeMotionControl::setLimitsRaw(int j, double min, double max)
 
 bool FakeMotionControl::getLimitsRaw(int j, double *min, double *max)
 {
-    return false;
+    *min = -90.0*182.044;
+    *max =  90.0*182.044;
+
+    return true;
 }
 
 bool FakeMotionControl::getGearboxRatioRaw(int j, double *gearbox)
@@ -2715,7 +2720,7 @@ bool FakeMotionControl::setVelLimitsRaw(int axis, double min, double max)
 bool FakeMotionControl::getVelLimitsRaw(int axis, double *min, double *max)
 {
     *min = 0.0;
-    *max = _maxJntCmdVelocity[axis];
+    *max = 60.0*182.044; //_maxJntCmdVelocity[axis];
     return true;
 }
 

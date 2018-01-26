@@ -39,8 +39,8 @@ public:
     virtual bool checkVelocity(int part, double *v) = 0;
     virtual bool checkVelocity(int part, int njoints, int *joints, double *v) = 0;
 
-    virtual void map(int k, int wBase, int wTop, int base, int top);
-    virtual int bind(std::string part) = 0;
+    virtual void map(int part, int wBase, int wTop, int base, int top) = 0;
+    virtual int bind() = 0;
 };
 
     }
