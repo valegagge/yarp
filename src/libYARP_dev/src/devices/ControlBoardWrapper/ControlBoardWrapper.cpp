@@ -1186,22 +1186,21 @@ bool ControlBoardWrapper::getPid(const PidControlTypeEnum& pidtype, int j, Pid *
 bool ControlBoardWrapper::getPids(const PidControlTypeEnum& pidtype, Pid *pids)
 {
     bool ret=true;
-
-    for(int l=0;l<controlledJoints;l++)
+    int nj=0; //nj contains the number of joint of previous devices
+    for(int d=0; d<device.subdevices.size(); d++)
     {
-        int off=device.lut[l].offset;
-        int subIndex=device.lut[l].deviceEntry;
-
-        yarp::dev::impl::SubDevice *p=device.getSubdevice(subIndex);
+        yarp::dev::impl::SubDevice *p=device.getSubdevice(d);
         if (!p)
             return false;
-
+        
         if (p->pid)
         {
-            ret=ret&&p->pid->getPid(pidtype, off+p->base, pids+l);
+            ret=ret&&p->pid->getPids(pidtype, pids+nj);
         }
         else
             ret=false;
+        
+        nj+=p->axes;
     }
     return ret;
 }
