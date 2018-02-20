@@ -1182,10 +1182,31 @@ bool ControlBoardWrapper::getPid(const PidControlTypeEnum& pidtype, int j, Pid *
     }
     return false;
 }
-
+#define OLD 0
 bool ControlBoardWrapper::getPids(const PidControlTypeEnum& pidtype, Pid *pids)
 {
     bool ret=true;
+    double start_time = yarp::os::Time::now();
+#if OLD
+
+    for(int l=0;l<controlledJoints;l++)
+    {
+        int off=device.lut[l].offset;
+        int subIndex=device.lut[l].deviceEntry;
+        
+        yarp::dev::impl::SubDevice *p=device.getSubdevice(subIndex);
+        if (!p)
+            return false;
+        
+        if (p->pid)
+        {
+            ret=ret&&p->pid->getPid(pidtype, off+p->base, pids+l);
+        }
+        else
+            ret=false;
+    }
+
+#else
     int nj=0; //nj contains the number of joint of previous devices
     for(int d=0; d<device.subdevices.size(); d++)
     {
@@ -1202,7 +1223,11 @@ bool ControlBoardWrapper::getPids(const PidControlTypeEnum& pidtype, Pid *pids)
         
         nj+=p->axes;
     }
-    return ret;
+    
+#endif
+    double end_time = yarp::os::Time::now();
+    yError() << " ----- PIDS TIME: "<< end_time -start_time;
+return ret;
 }
 
 bool ControlBoardWrapper::getPidReference(const PidControlTypeEnum& pidtype, int j, double *ref) {
