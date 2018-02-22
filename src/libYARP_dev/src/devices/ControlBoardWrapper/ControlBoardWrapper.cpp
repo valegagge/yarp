@@ -65,6 +65,13 @@ void ControlBoardWrapper::cleanup_yarpPorts()
     extendedOutputStatePort.close();
 
     rpcData.destroy();
+    
+    s_pids = new Pid* [device.subdevices.size()];
+    for(int d=0; d<device.subdevices.size(); d++ )
+    {
+         delete [] s_pids[d];
+    }
+    delete [] s_pids;
 }
 
 ControlBoardWrapper::~ControlBoardWrapper() { }
@@ -450,6 +457,22 @@ bool ControlBoardWrapper::open(Searchable& config)
 
     // using controlledJoints here will allocate more memory than required, but not so much.
     rpcData.resize(device.subdevices.size(), controlledJoints, &device);
+    yError() << "----CWB " << rootName << " : has " << device.subdevices.size() << "devices";
+    s_pids = new Pid* [device.subdevices.size()];
+    for(int d=0; d<device.subdevices.size(); d++ )
+    {
+        yarp::dev::impl::SubDevice *sd = device.getSubdevice(d);
+        int axes; 
+        if(!sd->iJntEnc->getAxes(&axes))
+        {
+           yError() << "get axes error!!";
+           return false;
+        }
+        yError() << "    * dev " << d << " " << sd->id << " : has " << axes << "axes";
+        s_pids[d] = new Pid[axes];
+        
+    }
+    yError() << "---------------------------------------------";
 
      /* This must be after the openAndAttachSubDevice() or openDeferredAttach() in order to have the correct number of controlledJoints,
         but before the initialize_ROS and initialize_YARP */
@@ -1183,6 +1206,7 @@ bool ControlBoardWrapper::getPid(const PidControlTypeEnum& pidtype, int j, Pid *
     return false;
 }
 #define OLD 0
+#define DYNAMIC_MEM 0
 bool ControlBoardWrapper::getPids(const PidControlTypeEnum& pidtype, Pid *pids)
 {
     bool ret=true;
@@ -1213,16 +1237,30 @@ bool ControlBoardWrapper::getPids(const PidControlTypeEnum& pidtype, Pid *pids)
         yarp::dev::impl::SubDevice *p=device.getSubdevice(d);
         if (!p)
             return false;
-        
-        if (p->pid)
+        #if DYNAMIC_MEM
+        int axes;
+        if(!p->iJntEnc->getAxes(&axes))
         {
-            ret=ret&&p->pid->getPids(pidtype, pids+nj);
+            yError () << "ControlBoardWrapper::getPids: get axes error ";
+            return false;
         }
+        Pid dev_pids[axes];
+        if((p->pid) && (p->pid->getPids(pidtype,dev_pids)))
+        {
+            memcpy(&pids[nj], dev_pids, sizeof(Pid)*p->axes); //copy in the arry given by user only the pid required for that subdevice
+            nj+=p->axes;
+        }
+        #else
+        if((p->pid) && (p->pid->getPids(pidtype,s_pids[d]))) 
+        {
+            memcpy(&pids[nj], s_pids, sizeof(Pid)*p->axes); //copy in the arry given by user only the pid required for that subdevice
+            nj+=p->axes;
+        }
+        #endif
         else
-            ret=false;
-        
-        nj+=p->axes;
+            return false;
     }
+    ret = true;
     
 #endif
     double end_time = yarp::os::Time::now();
