@@ -66,7 +66,6 @@ void ControlBoardWrapper::cleanup_yarpPorts()
 
     rpcData.destroy();
     
-    s_pids = new Pid* [device.subdevices.size()];
     for(int d=0; d<device.subdevices.size(); d++ )
     {
          delete [] s_pids[d];
@@ -462,13 +461,23 @@ bool ControlBoardWrapper::open(Searchable& config)
     for(int d=0; d<device.subdevices.size(); d++ )
     {
         yarp::dev::impl::SubDevice *sd = device.getSubdevice(d);
-        int axes; 
-        if(!sd->iJntEnc->getAxes(&axes))
+        if(!sd)
         {
-           yError() << "get axes error!!";
+           yError() << "CWB sd is null!";
            return false;
         }
-        yError() << "    * dev " << d << " " << sd->id << " : has " << axes << "axes";
+//        if(!sd->iJntEnc)
+//        {
+//           yError() << "CWB sd->iJntEnc is  null";
+//           return false;
+//        }
+        int axes=12; //jens is null
+//        if(!sd->iJntEnc->getAxes(&axes))
+//        {
+//           yError() << "get axes error!!";
+//           return false;
+//        }
+        yError() << "    * dev " << d << " : has " << axes << "axes";
         s_pids[d] = new Pid[axes];
         
     }
@@ -1253,7 +1262,7 @@ bool ControlBoardWrapper::getPids(const PidControlTypeEnum& pidtype, Pid *pids)
         #else
         if((p->pid) && (p->pid->getPids(pidtype,s_pids[d]))) 
         {
-            memcpy(&pids[nj], s_pids, sizeof(Pid)*p->axes); //copy in the arry given by user only the pid required for that subdevice
+            memcpy(&pids[nj], s_pids[d], sizeof(Pid)*p->axes); //copy in the arry given by user only the pid required for that subdevice
             nj+=p->axes;
         }
         #endif
