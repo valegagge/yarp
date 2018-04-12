@@ -508,6 +508,7 @@ bool ControlBoardWrapper::openDeferredAttach(Property& prop)
         return false;
 
     controlledJoints=prop.find("joints").asInt();
+    yError() << "CBW " <<partName << " controlledjoints=" << controlledJoints;
 
     int nsubdevices=nets->size();
     device.lut.resize(controlledJoints);
@@ -578,6 +579,7 @@ bool ControlBoardWrapper::openDeferredAttach(Property& prop)
         tmpDevice->setVerbose(_verb);
 
         int axes=top-base+1;
+        yError() << "CBW " <<partName << " configure sub device "<< k << " "  << nets->get(k).asString().c_str() << "with wbase=" << wBase << ", wTop=" << wTop << ", base=" << base <<"top="<< top << "axes=" <<axes;
         if (!tmpDevice->configure(wBase, wTop, base, top, axes, nets->get(k).asString().c_str(), this))
         {
             yError() <<"configure of subdevice ret false";
@@ -2710,6 +2712,12 @@ bool ControlBoardWrapper::getEncoders(double *encs)
     }
     
     delete [] encValues;
+    for(int j=0; j<controlledJoints; j++)
+    {
+        if((encs[j] > -1.0 ) &&  (encs[j] <1.0))
+            yError() << "enc = 0 su j" << j << " controlledJoints=" << controlledJoints;
+    }
+    
     return ret;
     
 }
