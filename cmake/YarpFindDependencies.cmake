@@ -448,6 +448,9 @@ checkandset_dependency(realsense2)
 find_package(Doxygen)
 checkandset_dependency(Doxygen)
 
+find_package(GObject QUIET)
+checkandset_dependency(GObject)
+
 find_package(GLIB2 QUIET)
 checkandset_dependency(GLIB2)
 
@@ -503,6 +506,7 @@ print_dependency(ZFP)
 print_dependency(OpenNI2)
 print_dependency(realsense2)
 print_dependency(GLIB2)
+print_dependency(GObject)
 print_dependency(GStreamer)
 print_dependency(GStreamerPluginsBase)
 print_dependency(BISON)
