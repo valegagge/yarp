@@ -54,6 +54,7 @@ public:
     Log(const char* file,
         const unsigned int line,
         const char* func,
+        const double customTime = 0.0,
         const LogComponent& comp = defaultLogComponent());
 
     Log();
@@ -158,12 +159,14 @@ private:
 
 #ifndef NDEBUG
 #  define yTrace(...)   yarp::os::Log(__FILE__, __LINE__, __YFUNCTION__).trace(__VA_ARGS__)
+#  define yTraceCustomTime(customTime, ...)   yarp::os::Log(__FILE__, __LINE__, __YFUNCTION__, customTime).trace(__VA_ARGS__)
 #else
 #  define yTrace(...)   yarp::os::Log::nolog(__VA_ARGS__)
 #endif
 
 #ifndef YARP_NO_DEBUG_OUTPUT
 #  define yDebug(...)   yarp::os::Log(__FILE__, __LINE__, __YFUNCTION__).debug(__VA_ARGS__)
+#  define yDebugCustomTime(customTime, ...)   yarp::os::Log(__FILE__, __LINE__, __YFUNCTION__, customTime).debug(__VA_ARGS__)
 #else
 #  define yDebug(...)   yarp::os::Log::nolog(__VA_ARGS__)
 #endif
@@ -172,6 +175,11 @@ private:
 #define yWarning(...) yarp::os::Log(__FILE__, __LINE__, __YFUNCTION__).warning(__VA_ARGS__)
 #define yError(...)   yarp::os::Log(__FILE__, __LINE__, __YFUNCTION__).error(__VA_ARGS__)
 #define yFatal(...)   yarp::os::Log(__FILE__, __LINE__, __YFUNCTION__).fatal(__VA_ARGS__)
+
+#define yInfoCustomTime(customTime, ...)    yarp::os::Log(__FILE__, __LINE__, __YFUNCTION__, customTime).info(__VA_ARGS__)
+#define yWarningCustomTime(customTime, ...) yarp::os::Log(__FILE__, __LINE__, __YFUNCTION__, customTime).warning(__VA_ARGS__)
+#define yErrorCustomTime(customTime, ...)   yarp::os::Log(__FILE__, __LINE__, __YFUNCTION__, customTime).error(__VA_ARGS__)
+#define yFatalCustomTime(customTime, ...)   yarp::os::Log(__FILE__, __LINE__, __YFUNCTION__, customTime).fatal(__VA_ARGS__)
 
 #ifndef NDEBUG
 #  define yAssert(x)                                                       \

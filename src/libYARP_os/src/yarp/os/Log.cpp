@@ -59,6 +59,7 @@ public:
     LogPrivate(const char* file,
                const unsigned int line,
                const char* func,
+               const double customTime,
                const LogComponent& comp);
 
     void log(yarp::os::Log::LogType type,
@@ -136,6 +137,7 @@ public:
     const char* func;         // NOLINT(misc-non-private-member-variables-in-classes)
     double systemtime;        // NOLINT(misc-non-private-member-variables-in-classes)
     double networktime;       // NOLINT(misc-non-private-member-variables-in-classes)
+    double customTime;        // NOLINT(misc-non-private-member-variables-in-classes)
     const LogComponent& comp; // NOLINT(misc-non-private-member-variables-in-classes)
 
     static std::atomic<bool> yarprun_format;
@@ -533,12 +535,14 @@ const yarp::os::LogComponent yarp::os::impl::LogPrivate::log_internal_component(
 yarp::os::impl::LogPrivate::LogPrivate(const char* file,
                                        unsigned int line,
                                        const char* func,
+                                       const double customTime,
                                        const LogComponent& comp) :
         file(file),
         line(line),
         func(func),
         systemtime(yarp::os::SystemClock::nowSystem()),
         networktime(!yarp::os::NetworkBase::isNetworkInitialized() ? 0.0 : (yarp::os::Time::isSystemClock() ? systemtime : yarp::os::Time::now())),
+        customTime(customTime),
         comp(comp)
 {
 #ifdef YARP_HAS_WIN_VT_SUPPORT
@@ -782,8 +786,9 @@ const yarp::os::LogComponent& yarp::os::Log::logInternalComponent()
 yarp::os::Log::Log(const char* file,
                    unsigned int line,
                    const char* func,
+                   const double customTime,
                    const LogComponent& comp) :
-        mPriv(new yarp::os::impl::LogPrivate(file, line, func, comp))
+        mPriv(new yarp::os::impl::LogPrivate(file, line, func, customTime, comp))
 {
 }
 
